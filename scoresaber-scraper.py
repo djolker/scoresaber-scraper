@@ -2,11 +2,12 @@ import time
 import datetime
 import codecs
 import requests
+import json
 from lxml import html
 
 #page to start on, and number of pages to scrape (50 results per page)
 startpage = 1
-maxpages = 1000
+maxpages = 2000
 
 def scrape_leaderboard(pagenum):
     players = []
@@ -18,12 +19,18 @@ def scrape_leaderboard(pagenum):
     page = requests.get(url)
     tree = html.fromstring(page.content)
     rows = tree.xpath('//div/table/tbody/tr')
+    with open('country-codes.json') as file:
+        countrycodes = json.load(file)
 
     for row in rows:
         rank = row.xpath('td/text()')[0].replace('#','').strip()
         pp = row.xpath('td/text()')[1].replace("pp",'').replace(',','').strip()
         name = row.xpath('td/a/text()')[0].replace(',','')
-        country = row.xpath('td/a/img')[0].attrib['src'][15:].replace(".png",'').upper()
+        countrycode = row.xpath('td/a/img')[0].attrib['src'][15:].replace(".png",'').upper()
+        if countrycode in countrycodes.keys():
+            country = countrycodes[countrycode]
+        else:
+            country = countrycode
         players.append({'name': name, 'pp': pp, 'country': country, 'rank': rank})
 
     return players
@@ -50,3 +57,4 @@ def write_leaderboard_rankings_csv():
 
 if __name__ == "__main__":
     write_leaderboard_rankings_csv()
+
