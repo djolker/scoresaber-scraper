@@ -7,7 +7,7 @@ from lxml import html
 
 #page to start on, and number of pages to scrape (50 results per page)
 startpage = 1
-maxpages = 2000
+endpage = 2000
 
 def scrape_leaderboard(pagenum):
     players = []
@@ -40,7 +40,7 @@ def write_leaderboard_rankings_csv():
     timestamp = "{}-{}-{}".format(dt.day,dt.month,dt.year)
 
     with codecs.open("leaderboard-rankings-{}.csv".format(timestamp), 'w', encoding='utf-8') as file:
-        for x in range(startpage,maxpages+1):
+        for x in range(startpage, endpage):
             try:
                 print("Scraping page #{}...".format)
                 players = scrape_leaderboard(x)
@@ -52,7 +52,7 @@ def write_leaderboard_rankings_csv():
             for player in players:
                 playerdata = u"{},{},{},{}\n".format(player['rank'],player['name'],player['pp'],player['country'])
                 file.write(playerdata)
-        print("Scrape complete. {} leaderboard pages scraped.".format(maxpages))
+        print("Scrape complete. {} leaderboard pages scraped.".format(endpage))
 
 
 if __name__ == "__main__":
