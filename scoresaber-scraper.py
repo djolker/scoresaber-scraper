@@ -7,13 +7,13 @@ from lxml import html
 
 #page to start on, and number of pages to scrape (50 results per page)
 startpage = 1
-endpage = 2000
+endpage = 50
 
 def scrape_leaderboard(pagenum):
     players = []
 
     if pagenum == 1:
-        url = "https://scoresaber.com/global/"
+        url = "https://scoresaber.com/global"
     else:
         url = "https://scoresaber.com/global/{}".format(pagenum)
     page = requests.get(url)
