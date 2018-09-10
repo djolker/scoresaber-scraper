@@ -23,7 +23,7 @@ def scrape_leaderboard(pagenum):
         countrycodes = json.load(file)
 
     for row in rows:
-        rank = row.xpath('td/text()')[0].replace('#','').strip()
+        rank = row.xpath('td/text()')[0].replace('#','').replace(',','').strip()
         pp = row.xpath('td/text()')[1].replace("pp",'').replace(',','').strip()
         name = row.xpath('td/a/text()')[0].replace(',','')
         countrycode = row.xpath('td/a/img')[0].attrib['src'][15:].replace(".png",'').upper()
@@ -45,7 +45,7 @@ def write_leaderboard_rankings_csv():
                 print("Scraping page #{}...".format)
                 players = scrape_leaderboard(x)
                 #sleep so we don't throttle ourselves
-                time.sleep(2)
+                time.sleep(1)
             except Exception as e:
                 print("Error scraping page #{}:\n{}\nHalting Scraping".format(x, e))
                 break
