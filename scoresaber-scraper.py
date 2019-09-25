@@ -3,11 +3,8 @@ import datetime
 import codecs
 import requests
 import json
+import sys
 from lxml import html
-
-#page to start on, and number of pages to scrape (50 results per page)
-startpage = 1
-endpage = 50
 
 def scrape_leaderboard(pagenum):
     players = []
@@ -42,12 +39,12 @@ def scrape_leaderboard(pagenum):
 
     return players
 
-def write_leaderboard_rankings_csv():
+def write_leaderboard_rankings_csv(sPage, ePage):
     dt = datetime.datetime.now()
     timestamp = "{}-{}-{}".format(dt.day,dt.month,dt.year)
 
     with codecs.open("leaderboard-rankings-{}.csv".format(timestamp), 'w', encoding='utf-8') as file:
-        for x in range(startpage, endpage):
+        for x in range(sPage, ePage):
             try:
                 print("Scraping page #{}...".format)
                 players = scrape_leaderboard(x)
@@ -59,11 +56,11 @@ def write_leaderboard_rankings_csv():
             for player in players:
                 playerdata = u"{},{},{},{}\n".format(player['rank'],player['name'],player['pp'],player['country'])
                 file.write(playerdata)
-        print("Scrape complete. {} leaderboard pages scraped.".format(endpage))
+        print("Scrape complete. pages " + str(sPage) + " to " + str(ePage))
 
 
 def deEmojify(inputString):
     return inputString.encode('ascii', 'ignore').decode('ascii')
 
 if __name__ == "__main__":
-    write_leaderboard_rankings_csv()
+    write_leaderboard_rankings_csv(int(sys.argv[1]), int(sys.argv[2]))
