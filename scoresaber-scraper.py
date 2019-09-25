@@ -23,15 +23,22 @@ def scrape_leaderboard(pagenum):
         countrycodes = json.load(file)
 
     for row in rows:
-        rank = row.xpath('td/text()')[0].replace('#','').replace(',','').strip()
-        pp = row.xpath('td/text()')[1].replace("pp",'').replace(',','').strip()
-        name = row.xpath('td/a/text()')[0].replace(',','')
+        addPersonFlag = 0
+        rank = row.xpath('td/text()')[2].replace(',','').strip()
+        pp = row.xpath('td/span/text()')[0].replace("pp",'').replace(',','').strip()
+        #Some names on ScoreSaber are not text, so this set the name to "UNREADABLE"
+        try:
+            name = row.xpath('td/a/span/text()')[0].replace(',','')
+        except:
+            name = "UNREADABLE"
+
         countrycode = row.xpath('td/a/img')[0].attrib['src'][15:].replace(".png",'').upper()
         if countrycode in countrycodes.keys():
             country = countrycodes[countrycode]
         else:
             country = countrycode
-        players.append({'name': name, 'pp': pp, 'country': country, 'rank': rank})
+        if addPersonFlag == 0:
+            players.append({'name': name, 'pp': pp, 'country': country, 'rank': rank})
 
     return players
 
@@ -55,6 +62,8 @@ def write_leaderboard_rankings_csv():
         print("Scrape complete. {} leaderboard pages scraped.".format(endpage))
 
 
+def deEmojify(inputString):
+    return inputString.encode('ascii', 'ignore').decode('ascii')
+
 if __name__ == "__main__":
     write_leaderboard_rankings_csv()
-
